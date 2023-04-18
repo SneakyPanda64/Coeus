@@ -17,7 +17,6 @@ def ReadDocument(id):
     return headers, markdown_text
 def GetContext(id, index):
     headers, markdown_text = ReadDocument(id)
-    body_text = ""
     if index + 1 < len(headers):
         body_text = re.findall(f"(?s)(?<=## {headers[index]}).*?(?=## {headers[index + 1]})", markdown_text)[0].strip()
     else:
