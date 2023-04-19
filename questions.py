@@ -38,4 +38,4 @@ def CheckQuestion(id, index, question, answer):
         {"role": "system", "content": "You are an AI used for teaching business to students"},
         {"role": "user", "content": f"Judge the correctness on the following answer using the question and context provided also provide the model answer if the correctness is below 0.9 and respond using the format specified.\n\nQuestion: {question}\n\nAnswer: {answer}.\n\nformat: {{\"correctness\": 0.00, \"comments\": [], \"model_answer\": \"\"}}\n\nContext:\n\n{context}"}
     ], 256, 0)
-    return json.loads(answer)
+    return json.loads(answer.split("\n")[0])

@@ -1,3 +1,5 @@
+import textwrap
+
 import learner
 import questions
 from statistics import mean, mode
@@ -18,8 +20,14 @@ def StartQuiz(id):
 
 def SubTopic(id, index):
     explanation = learner.GetExplanation(id, index)
+    wrapper = textwrap.TextWrapper(width=100)
+
     print("=" * 20)
-    print(explanation)
+    for v in explanation.split("\n\n"):
+        word_list = wrapper.wrap(text=v)
+        for v in word_list:
+            print(v)
+        print("\n")
     print("=" * 20)
     SubTopicQuestions(id, index)
 def SubTopicQuestions(id, index,):
@@ -29,13 +37,15 @@ def SubTopicQuestions(id, index,):
         print("=" * 20)
         print(f"Question ({i + 1}/{len(qs)})", question["question"] + "\n\n")
         answer = input("Answer: ")
-        response = questions.CheckQuestion(id, index, question["question"], answer)
-        print(f"Correctness:", str(response["correctness"] * 100) + "%")
-        if response["correctness"] < 0.9:
-            print(f"Comments:", "\n".join(response["comments"]))
-            print(f"Model Answer:", response["model_answer"])
-        answers.append(Answer(question, answer, response["correctness"]))
-    Stats(answers)
+        if answer != "skip":
+            response = questions.CheckQuestion(id, index, question["question"], answer)
+            print(f"Correctness:", str(response["correctness"] * 100) + "%")
+            if response["correctness"] < 0.9:
+                print(f"Comments:", "\n".join(response["comments"]))
+                print(f"Model Answer:", response["model_answer"])
+            answers.append(Answer(question, answer, response["correctness"]))
+    if len(answers) > 0:
+        Stats(answers)
     try_again = input("Would you like to try again? [y/N]: ")
     if try_again.upper() == "Y":
         SubTopicQuestions(id, index)
