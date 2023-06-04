@@ -28,6 +28,20 @@ class Slide:
 #         ]
 #     )
 #     return response.choices[0].message.content
+def SimplifyText(text):
+    formatted_text = gpt.ChatCompletion([
+        {"role": "system", "content": "You are an AI used for teaching business to A level students."},
+        {"role": "user",
+         "content": f"Loosely simplify the following paragraph:\n\n{text}"},
+    ], 2048, 0.2)
+    return formatted_text
+def FormatText(text):
+    formatted_text = gpt.ChatCompletion([
+        {"role": "system", "content": "You are an AI used for teaching business to A level students."},
+        {"role": "user",
+         "content": f"Format the following passage to make it more readable in markdown. And fix the grammar and formatting of the text. Discard and do not include any links. Highlight any important keywords with bold.\n\n{text}"},
+    ], 2048, 0.2)
+    return formatted_text
 def ConvertPP(input, output):
     prs = Presentation(input)
     slides = []
@@ -49,16 +63,20 @@ def ConvertPP(input, output):
             body_text = " ".join(s.paragraphs)
             slide_text = f"# {s.paragraphs[0]}\n\n{body_text}\n\n"
             text += slide_text
-        formatted_text = gpt.ChatCompletion([
-            {"role": "system", "content": "You are an AI used for teaching business to A level students."},
-            {"role": "user",
-             "content": f"Format the following passage to make it more readable in markdown. And fix the grammar and formatting of the text. Discard and do not include any links. Highlight any important keywords with bold.\n\n{text}"},
-        ], 2048, 0.2)
+        formatted_text = FormatText(text)
         f.write(formatted_text)
+def ConvertPDF(input, output):
+    pass
 
 def Checker():
-    out_files = [(os.path.splitext(v)[0] + ".pptx") for v in os.listdir("output")]
+    out_files = [(os.path.splitext(v)[0]) for v in os.listdir("output")]
     for file in os.listdir("input"):
-        if file not in out_files:
+        if os.path.splitext(file)[0] not in out_files:
             print(f"[Checker] Found file {file} (converting)...")
-            ConvertPP(os.path.join("input", file), os.path.join("output", os.path.splitext(file)[0] + ".md"))
+            file_output = os.path.join("output", os.path.splitext(file)[0] + ".md")
+            file_input = os.path.join("input", file)
+            match os.path.splitext(file)[1]:
+                case "pptx":-
+                    ConvertPP(file_input, file_output)
+                case "pdf":
+                    ConvertPDF(file_input, file_output)
