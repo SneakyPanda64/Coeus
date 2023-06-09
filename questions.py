@@ -28,7 +28,7 @@ def GenerateQuestion(id, index):
     questions = gpt.ChatCompletion([
         {"role": "system", "content": "You are an AI used for teaching business to A level students."},
         {"role": "user",
-         f"content": f"Write a list of questions worth 2-4 marks using information from the following passage. Difficulty is in a range between 1 and 10, 10 being the hardest:\n\nformat: [{{\"question\": \"\", \"difficulty\": 0}}]\n\npassage:\n\n{full_text}"},
+         f"content": f"Write a list of 2-3 questions worth 2-4 marks using information from the following passage. Difficulty is in a range between 1 and 10, 10 being the hardest:\n\nformat: [{{\"question\": \"\", \"difficulty\": 0}}]\n\npassage:\n\n{full_text}"},
     ], 250, 0.7)
     return json.loads(questions)
 def CheckQuestion(id, index, question, answer):

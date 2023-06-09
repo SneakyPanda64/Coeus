@@ -4,7 +4,7 @@ from pptx import Presentation
 import os
 import openai
 from dotenv import load_dotenv
-
+from PyPDF2 import PdfReader
 import gpt
 
 load_dotenv()
@@ -66,7 +66,16 @@ def ConvertPP(input, output):
         formatted_text = FormatText(text)
         f.write(formatted_text)
 def ConvertPDF(input, output):
-    pass
+    reader = PdfReader(input)
+    print(len(reader.pages))
+    total_text = ""
+    for page in reader.pages:
+        text = page.extract_text()
+        simplified_text = SimplifyText(text)
+        total_text += f"{simplified_text}\n"
+    formatted_text = FormatText(total_text)
+    with open(output, "w") as f:
+        f.write(formatted_text)
 
 def Checker():
     out_files = [(os.path.splitext(v)[0]) for v in os.listdir("output")]
@@ -76,7 +85,7 @@ def Checker():
             file_output = os.path.join("output", os.path.splitext(file)[0] + ".md")
             file_input = os.path.join("input", file)
             match os.path.splitext(file)[1]:
-                case "pptx":-
+                case ".pptx":
                     ConvertPP(file_input, file_output)
-                case "pdf":
+                case ".pdf":
                     ConvertPDF(file_input, file_output)
